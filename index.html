@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareCalendar - Personalized Health & Screening Tracker</title>
+    <title>CareCalendar - Advanced Health & Screening Management</title>
     <link rel="icon" type="image/png" href="./Icon.png">
-    <meta name="description" content="CareCalendar helps you stay on top of your health with personalized screening recommendations, medication reminders, and secure medical record keeping.">
+    <meta name="description" content="CareCalendar is a comprehensive health management platform offering personalized screening recommendations, medication adherence tracking, secure medical imaging, and cycle monitoring.">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,185 +15,372 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Alpine.js for interactions -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
             scroll-behavior: smooth;
         }
         .gradient-text {
-            background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #1e40af 0%, #4338ca 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .hero-bg {
             background: linear-gradient(180deg, #F9FAFB 0%, #EFF6FF 100%);
-            position: relative;
-            overflow: hidden;
         }
-        .hero-bg::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(255,255,255,0) 70%);
-            z-index: 0;
+        .section-fade {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
         }
-        .feature-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .section-fade.active {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        .icon-bg {
+            background: rgba(59, 130, 246, 0.1);
         }
     </style>
 </head>
-<body class="bg-white text-gray-800 antialiased">
+<body class="bg-white text-gray-800 antialiased" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+    <nav :class="{ 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100': scrolled, 'bg-transparent': !scrolled }" class="fixed w-full z-50 transition-all duration-300">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="./Icon.png" alt="CareCalendar Logo" class="w-10 h-10 rounded-xl shadow-sm">
-                <span class="text-xl font-bold text-gray-900 tracking-tight">CareCalendar</span>
+                <img src="./Icon.png" alt="CareCalendar Logo" class="w-9 h-9 rounded-lg shadow-sm">
+                <span class="text-lg font-bold text-gray-900 tracking-tight">CareCalendar</span>
             </div>
-            <div class="flex items-center gap-6">
-                <a href="#features" class="hidden md:block text-sm font-medium text-gray-600 hover:text-blue-600 transition">Features</a>
-                <a href="./support.html" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition">Support</a>
-                <a href="https://apps.apple.com/us/app/carecal/id6751422803" class="bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-full hover:bg-blue-700 transition shadow-md hover:shadow-lg">
-                    Get the App
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#screenings" class="text-sm font-medium text-gray-600 hover:text-blue-700 transition">Screenings</a>
+                <a href="#medications" class="text-sm font-medium text-gray-600 hover:text-blue-700 transition">Medications</a>
+                <a href="#carecamera" class="text-sm font-medium text-gray-600 hover:text-blue-700 transition">CareCamera</a>
+                <a href="#security" class="text-sm font-medium text-gray-600 hover:text-blue-700 transition">Security</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="./support.html" class="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-700 transition">Support</a>
+                <a href="https://apps.apple.com/us/app/carecal/id6751422803" class="bg-blue-700 text-white text-sm font-semibold py-2.5 px-6 rounded-full hover:bg-blue-800 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                    Download App
                 </a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-bg pt-32 pb-20 lg:pt-40 lg:pb-28 relative">
+    <section class="hero-bg pt-40 pb-24 lg:pt-48 lg:pb-32 relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
-            <div class="max-w-4xl mx-auto text-center">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-semibold uppercase tracking-wide mb-6">
-                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                    Now Available on iOS
+            <div class="max-w-5xl mx-auto text-center">
+                <div class="inline-block px-4 py-1.5 mb-6 border border-blue-100 rounded-full bg-white shadow-sm">
+                    <span class="text-xs font-bold tracking-wider text-blue-700 uppercase">Version 3.3 Available Now</span>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
-                    Your Health, <br class="hidden md:block">
-                    <span class="gradient-text">Simplified & Secure.</span>
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-8 leading-tight">
+                    Proactive Health Management, <br>
+                    <span class="gradient-text">Engineered for You.</span>
                 </h1>
-                <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                    The all-in-one companion for personalized screenings, medication tracking, and medical records. Take control of your preventive care today.
+                
+                <p class="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+                    CareCalendar is an advanced health companion that synthesizes clinical guidelines with your personal profile. From complex screening schedules to secure medical imaging, manage your preventive care with precision and privacy.
                 </p>
                 
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
                     <a href="https://apps.apple.com/us/app/carecal/id6751422803" target="_blank" class="inline-block transition-transform hover:scale-105">
                         <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1603670400" alt="Download on the App Store" class="h-14">
                     </a>
                 </div>
-                
-                <p class="mt-6 text-sm text-gray-400">Requires iOS 15.0 or later.</p>
             </div>
         </div>
     </section>
 
-    <!-- App Features Grid -->
-    <section id="features" class="py-24 bg-white">
+    <!-- Value Proposition Bar -->
+    <section class="py-12 border-y border-gray-100 bg-white">
         <div class="container mx-auto px-6">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Everything you need to manage your care</h2>
-                <p class="text-lg text-gray-600">CareCalendar brings your appointments, medications, and health data together in one private, secure dashboard.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="feature-card p-8 rounded-3xl bg-gray-50 border border-gray-100">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Personalized Screenings</h3>
-                    <p class="text-gray-600 leading-relaxed">Get tailored recommendations based on your age, sex, and family history, following official guidelines from the USPSTF and CDC.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                <div class="px-4 py-4">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Clinical Guidelines</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">Recommendations derived from USPSTF and CDC standards, adapted to your specific risk profile.</p>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="feature-card p-8 rounded-3xl bg-gray-50 border border-gray-100">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Medication Manager</h3>
-                    <p class="text-gray-600 leading-relaxed">Track prescriptions with critical alerts, refill reminders, and adherence history so you never miss a dose.</p>
+                <div class="px-4 py-4">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Privacy First Architecture</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">Your health data is encrypted and stored locally or in your private cloud database. We do not sell user data.</p>
                 </div>
-
-                <!-- Feature 3: CareCamera -->
-                <div class="feature-card p-8 rounded-3xl bg-gray-50 border border-gray-100">
-                    <div class="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">CareCamera™</h3>
-                    <p class="text-gray-600 leading-relaxed">Securely capture and organize photos of prescriptions, EKGs, wounds, or lab results to share with your provider.</p>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="feature-card p-8 rounded-3xl bg-gray-50 border border-gray-100">
-                    <div class="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Unified Calendar</h3>
-                    <p class="text-gray-600 leading-relaxed">See the big picture. Appointments, screenings, cycle tracking, and medication schedules all in one view.</p>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="feature-card p-8 rounded-3xl bg-gray-50 border border-gray-100">
-                    <div class="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Health Reports</h3>
-                    <p class="text-gray-600 leading-relaxed">Generate comprehensive PDF reports of your health data and history to easily share with your physician.</p>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="feature-card p-8 rounded-3xl bg-gray-50 border border-gray-100">
-                    <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Private & Secure</h3>
-                    <p class="text-gray-600 leading-relaxed">Your health data is encrypted. We don't sell your data to advertisers. You are in complete control.</p>
+                <div class="px-4 py-4">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Comprehensive Tracking</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">Unified management for appointments, medications, menstrual health, and medical documents.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Medical Disclaimer -->
-    <section class="py-16 bg-red-50 border-t border-red-100">
+    <!-- Feature 1: Screening Engine -->
+    <section id="screenings" class="py-24 section-fade">
         <div class="container mx-auto px-6">
-            <div class="max-w-3xl mx-auto text-center">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2">
+                    <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-blue-700 uppercase bg-blue-50 rounded-full">
+                        Intelligent Scheduling
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Personalized Screening Engine</h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        Standard health guidelines are complex. CareCalendar simplifies them by analyzing your age, biological sex, and detailed family history to generate a custom roadmap of preventive care.
+                    </p>
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-900">Dynamic Risk Assessment</h4>
+                                <p class="text-gray-600 mt-1">The engine adjusts recommendations based on risk factors like smoking history or genetic predispositions.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-900">Timely Notifications</h4>
+                                <p class="text-gray-600 mt-1">Receive alerts when specific screenings are due or overdue, ensuring you never miss a critical window.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-2xl font-bold text-red-900 mb-3">Important Medical Disclaimer</h3>
-                <p class="text-red-800/80 leading-relaxed">
-                    CareCalendar is a self-management companion tool and is <strong>not</strong> a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider for any health concerns or before making any medical decisions. If you think you are experiencing a medical emergency, call your local emergency number immediately.
-                </p>
+                <div class="lg:w-1/2">
+                    <div class="bg-gray-50 rounded-2xl border border-gray-100 p-8 shadow-lg">
+                        <div class="space-y-4">
+                            <!-- Mock UI Card -->
+                            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">Mammogram</p>
+                                    <p class="text-xs text-gray-500 mt-1">Due in 3 weeks • USPSTF Guideline</p>
+                                </div>
+                                <span class="px-3 py-1 bg-red-50 text-red-700 text-xs font-bold rounded-full border border-red-100">HIGH PRIORITY</span>
+                            </div>
+                            <!-- Mock UI Card -->
+                            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">Lipid Panel</p>
+                                    <p class="text-xs text-gray-500 mt-1">Due in 2 months • Cardiovascular</p>
+                                </div>
+                                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full border border-blue-100">ROUTINE</span>
+                            </div>
+                             <!-- Mock UI Card -->
+                             <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between opacity-75">
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">Colonoscopy</p>
+                                    <p class="text-xs text-gray-500 mt-1">Completed • Next due 2030</p>
+                                </div>
+                                <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full border border-green-100">DONE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature 2: CareCamera -->
+    <section id="carecamera" class="py-24 bg-gray-50 section-fade">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-16">
+                <div class="lg:w-1/2">
+                    <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-teal-700 uppercase bg-teal-50 rounded-full">
+                        Secure Document Storage
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">CareCamera™ Integration</h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        Medical documentation often relies on physical paper. CareCamera allows you to digitize prescriptions, lab results, EKG strips, and wound progress photos into a secure, organized vault within the app.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center mb-4 text-teal-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <h4 class="font-bold text-gray-900 mb-2">Prescriptions</h4>
+                            <p class="text-sm text-gray-600">Capture bottle labels and dosage instructions for quick reference.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center mb-4 text-teal-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            </div>
+                            <h4 class="font-bold text-gray-900">Wound Care</h4>
+                            <p class="text-sm text-gray-600">Track healing progress visually to share with your physician.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                     <div class="bg-white p-2 rounded-3xl shadow-xl border border-gray-200 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                        <!-- Simulated App Screen -->
+                        <div class="bg-gray-100 rounded-2xl overflow-hidden aspect-[4/3] relative flex items-center justify-center">
+                            <div class="text-center p-8">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-200 rounded-full mb-4 text-gray-400">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                </div>
+                                <p class="text-gray-500 font-medium">Secure Image Vault</p>
+                            </div>
+                            <!-- Overlay elements to simulate interface -->
+                            <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-xl border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-900">Lab_Results_Oct.jpg</p>
+                                        <p class="text-xs text-gray-500">Added today</p>
+                                    </div>
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature 3: Medications & Reports -->
+    <section id="medications" class="py-24 section-fade">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                 <div class="lg:w-1/2">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-100 shadow-lg">
+                            <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center mb-4 text-purple-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Medication Management</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                Organize complex medication schedules with custom reminders, adherence logging, and refill tracking. Supports variable frequencies and as-needed (PRN) medications.
+                            </p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-white border border-gray-100 shadow-lg">
+                             <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center mb-4 text-blue-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Physician Reporting</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                Compile your history, active medications, and screening status into a professional PDF report designed for physician review during appointments.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                    <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-purple-700 uppercase bg-purple-50 rounded-full">
+                        Adherence & Analysis
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Tools for the Full Picture</h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        Managing health requires consistency. CareCalendar provides the tools to track daily habits while maintaining a high-level view of your long-term health goals.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        We also include a dedicated <strong>Menstrual Tracker</strong> to monitor cycles, predict fertility windows, and log symptoms, integrating this vital data into your overall health profile.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="https://apps.apple.com/us/app/carecal/id6751422803" class="text-blue-700 font-bold hover:underline flex items-center gap-2">
+                            Explore all features
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy Section -->
+    <section id="security" class="py-24 bg-gray-900 text-white">
+        <div class="container mx-auto px-6 text-center max-w-4xl">
+            <div class="inline-block p-4 rounded-full bg-gray-800 mb-6">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Your Health Data is Yours Alone.</h2>
+            <p class="text-gray-400 text-lg mb-12 leading-relaxed">
+                We believe privacy is a fundamental human right. CareCalendar is built with privacy-by-design principles. Your sensitive health data is encrypted and stored securely. We do not sell your data to advertisers or third parties.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h4 class="font-bold text-white mb-2">Encrypted Storage</h4>
+                    <p class="text-sm text-gray-400">Data is encrypted at rest and in transit using industry-standard protocols.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h4 class="font-bold text-white mb-2">No Ads</h4>
+                    <p class="text-sm text-gray-400">Our business model does not rely on selling your attention or personal information.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h4 class="font-bold text-white mb-2">Data Control</h4>
+                    <p class="text-sm text-gray-400">You maintain full control over your data with easy export and deletion options.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Disclaimer -->
+    <section class="py-16 bg-white border-t border-gray-100">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-start gap-4 p-6 bg-red-50 rounded-xl border border-red-100">
+                    <div class="flex-shrink-0 w-6 h-6 mt-0.5 text-red-600">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h5 class="text-base font-bold text-red-900 mb-2">Important Medical Disclaimer</h5>
+                        <p class="text-sm text-red-800 leading-relaxed">
+                            CareCalendar is an informational tool and self-management companion. It is <strong>not</strong> a substitute for professional medical advice, diagnosis, or treatment. The screening recommendations provided are based on general guidelines (such as USPSTF and CDC) and may not apply to every individual situation. Always consult with a qualified healthcare provider for any health concerns or before making any medical decisions. If you think you are experiencing a medical emergency, call your local emergency number immediately.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <footer class="bg-white border-t border-gray-100 pt-16 pb-8">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center gap-3 mb-4 md:mb-0">
-                    <img src="./Icon.png" alt="CareCalendar Logo" class="w-8 h-8 rounded-lg grayscale opacity-80">
-                    <span class="font-semibold text-gray-300">CareCalendar</span>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="./Icon.png" alt="CareCalendar Logo" class="w-8 h-8 rounded-lg grayscale opacity-80">
+                        <span class="font-bold text-gray-900">CareCalendar</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-6 max-w-sm leading-relaxed">
+                        Empowering you to live a longer, healthier life through proactive organization and personalized preventive care.
+                    </p>
                 </div>
-                <div class="flex gap-6 text-sm text-gray-400">
-                    <a href="./support.html" class="hover:text-white transition">Support & FAQ</a>
-                    <a href="./privacy.html" class="hover:text-white transition">Privacy Policy</a>
+                <div>
+                    <h5 class="font-bold text-gray-900 mb-4">Features</h5>
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li><a href="#screenings" class="hover:text-blue-700 transition">Screening Engine</a></li>
+                        <li><a href="#medications" class="hover:text-blue-700 transition">Medication Tracking</a></li>
+                        <li><a href="#carecamera" class="hover:text-blue-700 transition">CareCamera</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-900 mb-4">Support</h5>
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li><a href="./support.html" class="hover:text-blue-700 transition">Contact Support</a></li>
+                        <li><a href="./privacy.html" class="hover:text-blue-700 transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-blue-700 transition">Terms of Service</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center md:text-left text-sm text-gray-500">
-                <p>&copy; 2025 The Catalyst Magazine. All Rights Reserved.</p>
+            <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-400">&copy; 2025 The Catalyst Magazine. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section-fade').forEach((el) => observer.observe(el));
+        });
+    </script>
 </body>
 </html>
